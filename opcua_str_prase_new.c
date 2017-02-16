@@ -26,8 +26,8 @@ typedef struct _DATA_SOURCE {
 
 UA_Server *g_opc_server;
 #define YES 1
-#define S_PORT 5888 //·¢ËÍ¶Ë¿Ú
-#define R_PORT 5222 //½ÓÊÕ¶Ë¿Ú
+#define S_PORT 5888 //å‘é€ç«¯å£
+#define R_PORT 5222 //æ¥æ”¶ç«¯å£
 #define BACKLOG 7
 int s_fd = 0;
 int ret = 0;
@@ -69,7 +69,7 @@ int getDataFromStr( char* const str, DATA_SOURCE *source)
 {
 	char *p=NULL;
 	int i;
-	p = strstr(str,source->name);//strstrº¯ÊıÊÇÓÃÀ´ÅĞ¶Ïstr2ÊÇ·ñÊÇstr1µÄ×Ó´®.¼´ÅĞ¶ÏsourceÖĞµÄnameÊÇ²»ÊÇstrµÄ×Ó´®¡£
+	p = strstr(str,source->name);//strstrå‡½æ•°æ˜¯ç”¨æ¥åˆ¤æ–­str2æ˜¯å¦æ˜¯str1çš„å­ä¸².å³åˆ¤æ–­sourceä¸­çš„nameæ˜¯ä¸æ˜¯strçš„å­ä¸²ã€‚
 	if(p != NULL) {
 		p = strstr(p,":");
 			if(p != NULL) {
@@ -81,9 +81,9 @@ int getDataFromStr( char* const str, DATA_SOURCE *source)
 							source->string_data[i] = '\0';
 							break;
 						}
-					}//ÌáÈ¡×Ö·û´®Êı¾İ·ÅÈëstring_dataÊı×é					
+					}//æå–å­—ç¬¦ä¸²æ•°æ®æ”¾å…¥string_dataæ•°ç»„					
 				} else if(source->type == 2) {
-					source->data = atof(p);//½«×Ö·û´®×ª»»³É¸¡µãÊı
+					source->data = atof(p);//å°†å­—ç¬¦ä¸²è½¬æ¢æˆæµ®ç‚¹æ•°
 				} else {
 					return -1;
 				}
@@ -112,7 +112,7 @@ int praseStrToData(char *str)
 		return -1;
 	}
 	len = strlen(str);
-	//¼ì²éÊ×Î²
+	//æ£€æŸ¥é¦–å°¾
 	/*
 	if(*str != '?' || str[len-1] != '!') {
 		return -1;
@@ -130,12 +130,12 @@ int praseStrToData(char *str)
 
 
 
-void creat_server_sockfd4(int *sockfd, struct sockaddr_in *local, int portnum){
+void creat_server_sockfd6(int *sockfd, struct sockaddr_in6 *local, int portnum){
 	int err;
 	int optval = YES;
 	int nodelay = YES;
 
-	*sockfd = socket(AF_INET, SOCK_STREAM, 0);//´´½¨Ì×½Ó¿Ú£¬Socket=Ip address+ TCP/UDP + port
+	*sockfd = socket(AF_INET6, SOCK_STREAM, 0);//åˆ›å»ºå¥—æ¥å£ï¼ŒSocket=Ip address+ TCP/UDP + port
 	if(*sockfd < 0){
 		perror("socket");
 		exit(EXIT_FAILURE);
@@ -147,27 +147,27 @@ void creat_server_sockfd4(int *sockfd, struct sockaddr_in *local, int portnum){
 	err = setsockopt(*sockfd,IPPROTO_TCP,TCP_NODELAY,&nodelay,sizeof(nodelay));
 	if(err){
 		perror("setsockopt");
-	}//sockfdÎª´´½¨Ì×½Ó×ÖµÄ·µ»ØÖµ¡£
+	}//sockfdä¸ºåˆ›å»ºå¥—æ¥å­—çš„è¿”å›å€¼ã€‚
 
 
 	memset(local, 0, sizeof(struct sockaddr_in));
 	local->sin_family = AF_INET;
-	local->sin_addr.s_addr = htonl(INADDR_ANY);//INADDR_ANYÎª²»È·¶¨µØÖ·£¬´ó²¿·ÖÏµÍ³¾ùÎª0.0.0.0£¬¿ÉÊ¹ÓÃÈÎÒâ½Ó¿Ú
-	local->sin_port = htons(portnum);//ÖØĞÂÉèÖÃlocalµÄÖµ,²¢×ª»»¸ñÊ½
+	local->sin_addr.s_addr = htonl(INADDR_ANY);//INADDR_ANYä¸ºä¸ç¡®å®šåœ°å€ï¼Œå¤§éƒ¨åˆ†ç³»ç»Ÿå‡ä¸º0.0.0.0ï¼Œå¯ä½¿ç”¨ä»»æ„æ¥å£
+	local->sin_port = htons(portnum);//é‡æ–°è®¾ç½®localçš„å€¼,å¹¶è½¬æ¢æ ¼å¼
 
-	err = bind(*sockfd, (struct sockaddr*)local, sizeof(struct sockaddr_in));//localÓëÌ×½Ó¿ÚÁ¬½Ó
+	err = bind(*sockfd, (struct sockaddr*)local, sizeof(struct sockaddr_in));//localä¸å¥—æ¥å£è¿æ¥
 	if(err < 0){
 		perror("bind");
 		exit(EXIT_FAILURE);
 	}
-	err = listen(*sockfd, BACKLOG);//ÈÃÌ×½Ó×Ö´¦ÓÚ¼àÌı×´Ì¬
+	err = listen(*sockfd, BACKLOG);//è®©å¥—æ¥å­—å¤„äºç›‘å¬çŠ¶æ€
 	if(err < 0){
 		perror("listen");
 		exit(EXIT_FAILURE);
 	}
 
 }
-//åˆ›å»ºæœåŠ¡å™¨
+//é’æ¶˜ç¼“éˆå¶…å§Ÿé£ï¿½
 void creatserver(struct argument *p){
 	char addrstr[100];
 	int serverfd;
@@ -175,7 +175,7 @@ void creatserver(struct argument *p){
 	struct sockaddr_in from;
 	unsigned int len = sizeof(from);
 
-	creat_server_sockfd4(&serverfd,&local_addr_s,p->port);//Ì×½Ó×ÖÓë·şÎñÆ÷ÏàÁ¬²¢´¦ÓÚ¼àÌı×´Ì¬
+	creat_server_sockfd4(&serverfd,&local_addr_s,p->port);//å¥—æ¥å­—ä¸æœåŠ¡å™¨ç›¸è¿å¹¶å¤„äºç›‘å¬çŠ¶æ€
 
 	while(1)
 	{
@@ -193,19 +193,19 @@ void creatserver(struct argument *p){
 }
 
 
-//è¯»å–æ•°æ®
+//ç’‡è¯²å½‡éç‰ˆåµ
 int ReadData(int fd,char *p){
 	char c;
 	int ret = 0;
 	int num = 0;
 
-	ret = recv(fd, &c, 1,0);//½ÓÊÕÌ×½Ó×ÖÊı¾İ²¢copyµ½cÖ¸µÄbuffÖĞ¡£·µ»Øcopy×Ö½ÚÊı¡£
+	ret = recv(fd, &c, 1,0);//æ¥æ”¶å¥—æ¥å­—æ•°æ®å¹¶copyåˆ°cæŒ‡çš„buffä¸­ã€‚è¿”å›copyå­—èŠ‚æ•°ã€‚
 	if(ret < 0){
 		perror("recv");
 		return 0;
 	}
 	else if(ret == 0){
-		printf("è¿æ¥æ–­å¼€\n");
+		printf("æ©ç‚´å¸´é‚î…ç´‘\n");
 		
 		return -1;
 	}
@@ -236,7 +236,7 @@ int SocketConnected(int sock)
 		return 0; 
 	struct tcp_info info; 
 	int len=sizeof(info); 
-	getsockopt(sock, IPPROTO_TCP, TCP_INFO, &info, (socklen_t *)&len); //»ñÈ¡Ì×½Ó¿ÚĞÅÏ¢
+	getsockopt(sock, IPPROTO_TCP, TCP_INFO, &info, (socklen_t *)&len); //è·å–å¥—æ¥å£ä¿¡æ¯
 	//if((info.tcpi_state==TCP_ESTABLISHED))	{
 	if((info.tcpi_state==1))	{
 //		printf("socket connected\n"); 
@@ -247,7 +247,7 @@ int SocketConnected(int sock)
 		return 0; 
 	} 
 }
-void* soureDataPrase(void *arg)//¶ÁÈ¡Êı¾İ£¬½¨Á¢Á¬½Ó£¬·¢ËÍÊı¾İ
+void* soureDataPrase(void *arg)//è¯»å–æ•°æ®ï¼Œå»ºç«‹è¿æ¥ï¼Œå‘é€æ•°æ®
 {
 	fd_set readfd;
 	int ret = 0;
@@ -258,41 +258,41 @@ void* soureDataPrase(void *arg)//¶ÁÈ¡Êı¾İ£¬½¨Á¢Á¬½Ó£¬·¢ËÍÊı¾İ
 	
 	printf("opcua adapter start, reviece port %d\n",R_PORT);
 	while(1){
-		maxfd = 0;//maxfdÊÇĞèÒª¼àÊÓµÄ×î´óµÄÎÄ¼şÃèÊö·ûÖµ+1
-		struct timeval timeout;// struct timeval½á¹¹ÓÃÓÚÃèÊöÒ»¶ÎÊ±¼ä³¤¶È£¬Èç¹ûÔÚÕâ¸öÊ±¼äÄÚ£¬ĞèÒª¼àÊÓµÄÃèÊö·ûÃ»ÓĞÊÂ¼ş·¢ÉúÔòº¯Êı·µ»Ø£¬·µ»ØÖµÎª0¡£
+		maxfd = 0;//maxfdæ˜¯éœ€è¦ç›‘è§†çš„æœ€å¤§çš„æ–‡ä»¶æè¿°ç¬¦å€¼+1
+		struct timeval timeout;// struct timevalç»“æ„ç”¨äºæè¿°ä¸€æ®µæ—¶é—´é•¿åº¦ï¼Œå¦‚æœåœ¨è¿™ä¸ªæ—¶é—´å†…ï¼Œéœ€è¦ç›‘è§†çš„æè¿°ç¬¦æ²¡æœ‰äº‹ä»¶å‘ç”Ÿåˆ™å‡½æ•°è¿”å›ï¼Œè¿”å›å€¼ä¸º0ã€‚
 		timeout.tv_sec = 2;
 		timeout.tv_usec = 0;
 		if(recvDataFD.fd != 0){
-			FD_ZERO(&readfd);//½«Ö¸¶¨µÄÎÄ¼şÃèÊö·û¼¯Çå¿Õ£¬ÔÚ¶ÔÎÄ¼şÃèÊö·û¼¯ºÏ½øĞĞÉèÖÃÇ°£¬±ØĞë¶ÔÆä½øĞĞ³õÊ¼»¯
-			FD_SET(recvDataFD.fd, &readfd);//ÓÃÓÚÔÚÎÄ¼şÃèÊö·û¼¯ºÏÖĞÔö¼ÓÒ»¸öĞÂµÄÎÄ¼şÃèÊö·û¡£
+			FD_ZERO(&readfd);//å°†æŒ‡å®šçš„æ–‡ä»¶æè¿°ç¬¦é›†æ¸…ç©ºï¼Œåœ¨å¯¹æ–‡ä»¶æè¿°ç¬¦é›†åˆè¿›è¡Œè®¾ç½®å‰ï¼Œå¿…é¡»å¯¹å…¶è¿›è¡Œåˆå§‹åŒ–
+			FD_SET(recvDataFD.fd, &readfd);//ç”¨äºåœ¨æ–‡ä»¶æè¿°ç¬¦é›†åˆä¸­å¢åŠ ä¸€ä¸ªæ–°çš„æ–‡ä»¶æè¿°ç¬¦ã€‚
 			maxfd = recvDataFD.fd + 1;			
-			ret = select(maxfd, &readfd, NULL, NULL, &timeout);//ÓÃÀ´¼ì²é&readfdÎÄ¼şÃèÊö·ûÊÇ·ñ¿É¶Á¡£·µ»ØÏàÓ¦Î»ÊÇ·ñÎªÒ»¡£
+			ret = select(maxfd, &readfd, NULL, NULL, &timeout);//ç”¨æ¥æ£€æŸ¥&readfdæ–‡ä»¶æè¿°ç¬¦æ˜¯å¦å¯è¯»ã€‚è¿”å›ç›¸åº”ä½æ˜¯å¦ä¸ºä¸€ã€‚
 			if(ret == -1){
 				perror("select");
-			}else if(ret > 0 && FD_ISSET(recvDataFD.fd, &readfd)){ //Èô¿É¶Á£¬ÇÒrecvDataFD,fdÔÚ&readfdÖĞ
+			}else if(ret > 0 && FD_ISSET(recvDataFD.fd, &readfd)){ //è‹¥å¯è¯»ï¼Œä¸”recvDataFD,fdåœ¨&readfdä¸­
 				//printf("ret = %d\n",ret);
-				p = (char *)malloc(sizeof(char) * 1000);//¸øpÖ¸ÕëËùÖ¸µÄµØÖ··ÖÅä4000×Ö½ÚµÄÄÚ´æ¿Õ¼ä
+				p = (char *)malloc(sizeof(char) * 1000);//ç»™pæŒ‡é’ˆæ‰€æŒ‡çš„åœ°å€åˆ†é…4000å­—èŠ‚çš„å†…å­˜ç©ºé—´
 				num = ReadData(recvDataFD.fd, p);
 				if(num > 0) {
 					printf("receive %d byte\n",num);
 					praseStrToData(p);
 					if(SocketConnected(sendOriginalDataFD.fd)) {
 					//if(sendOriginalDataFD.fd > 0) {
-						ret_send = send(sendOriginalDataFD.fd, p, num, 0);//send()ÓÃÓÚÏòÒ»¸öÒÑ¾­Á¬½ÓµÄsocket·¢ËÍÊı¾İ					
+						ret_send = send(sendOriginalDataFD.fd, p, num, 0);//send()ç”¨äºå‘ä¸€ä¸ªå·²ç»è¿æ¥çš„socketå‘é€æ•°æ®					
 						if(ret_send < 0) {
 							perror("send");
 							close(sendOriginalDataFD.fd);
 						}
 						else if(ret_send == 0)
-							printf("Á¬½Ó¶Ï¿ª\n");
+							printf("è¿æ¥æ–­å¼€\n");
 						else
-							printf("write sendOriginalDataFD_fd! ret_send=%d\n",ret_send);//·¢ËÍÁË¶àÉÙÊı¾İ
+							printf("write sendOriginalDataFD_fd! ret_send=%d\n",ret_send);//å‘é€äº†å¤šå°‘æ•°æ®
 					}
 				} else if (num == -1) {
 					//client disconnect
 					FD_CLR(recvDataFD.fd, &readfd);
 					printf("Client disconnect!\n");				
-					//close(recvDataFD.fd);  //¹Ø±ÕsocketÁ¬½Ó   
+					//close(recvDataFD.fd);  //å…³é—­socketè¿æ¥   
 		      recvDataFD.fd=0;
 				}
 				free(p);
@@ -312,7 +312,7 @@ void* nodeidFindData(const UA_NodeId nodeId)
 {
 	int i;
 	for(i=0;i<sizeof(source)/sizeof(DATA_SOURCE);i++) {
-		if(strncmp((char*)nodeId.identifier.string.data, source[i].name, strlen(source[i].name)) == 0) {//Èç¹û½ÚµãIDµÄÈÏÖ¤ĞÅÏ¢Óë·şÎñÆ÷Ãû×ÖÏàÍ¬å
+		if(strncmp((char*)nodeId.identifier.string.data, source[i].name, strlen(source[i].name)) == 0) {//å¦‚æœèŠ‚ç‚¹IDçš„è®¤è¯ä¿¡æ¯ä¸æœåŠ¡å™¨åå­—ç›¸åŒï¿½
 			if(source[i].type == 1) {
 				return &source[i].string_data[0];
 			}
