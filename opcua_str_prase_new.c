@@ -152,7 +152,7 @@ void creat_server_sockfd6(int *sockfd, struct sockaddr_in6 *local, int portnum){
 
 	memset(local, 0, sizeof(struct sockaddr_in6));
 	local->sin6_family = AF_INET6;
-	local->sin6_addr.s6_addr = htonl(IN6ADDR_ANY);//INADDR_ANY为不确定地址，大部分系统均为0.0.0.0，可使用任意接口
+	local->sin6_addr = in6addr_any;//INADDR_ANY为不确定地址，大部分系统均为0.0.0.0，可使用任意接口
 	local->sin6_port = htons(portnum);//重新设置local的值,并转换格式
 
 	err = bind(*sockfd, (struct sockaddr*)local, sizeof(struct sockaddr_in6));//local与套接口连接
