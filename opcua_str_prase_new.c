@@ -150,12 +150,12 @@ void creat_server_sockfd6(int *sockfd, struct sockaddr_in6 *local, int portnum){
 	}//sockfd为创建套接字的返回值。
 
 
-	memset(local, 0, sizeof(struct sockaddr_in));
+	memset(local, 0, sizeof(struct sockaddr_in6));
 	local->sin6_family = AF_INET6;
 	local->sin6_addr.s6_addr = htonl(IN6ADDR_ANY);//INADDR_ANY为不确定地址，大部分系统均为0.0.0.0，可使用任意接口
 	local->sin6_port = htons(portnum);//重新设置local的值,并转换格式
 
-	err = bind(*sockfd, (struct sockaddr*)local, sizeof(struct sockaddr_in));//local与套接口连接
+	err = bind(*sockfd, (struct sockaddr*)local, sizeof(struct sockaddr_in6));//local与套接口连接
 	if(err < 0){
 		perror("bind");
 		exit(EXIT_FAILURE);
@@ -171,8 +171,8 @@ void creat_server_sockfd6(int *sockfd, struct sockaddr_in6 *local, int portnum){
 void creatserver(struct argument *p){
 	char addrstr[100];
 	int serverfd;
-	struct sockaddr_in local_addr_s;
-	struct sockaddr_in from;
+	struct sockaddr_in6 local_addr_s;
+	struct sockaddr_in6 from;
 	unsigned int len = sizeof(from);
 
 	creat_server_sockfd6(&serverfd,&local_addr_s,p->port);//套接字与服务器相连并处于监听状态
@@ -187,7 +187,7 @@ void creatserver(struct argument *p){
 		struct timeval time;
 		gettimeofday(&time, NULL);
 		printf("time:%lds, %ldus\n",time.tv_sec,time.tv_usec);
-		printf("a IPv4 client from:%s\n",inet_ntop(AF_INET6, &(from.sin_addr), addrstr, INET_ADDRSTRLEN));
+		printf("a IPv6 client from:%s\n",inet_ntop(AF_INET6, &(from.sin_addr), addrstr, INET6_ADDRSTRLEN));
 	}
 
 }
