@@ -151,9 +151,9 @@ void creat_server_sockfd6(int *sockfd, struct sockaddr_in6 *local, int portnum){
 
 
 	memset(local, 0, sizeof(struct sockaddr_in));
-	local->sin_family = AF_INET;
-	local->sin_addr.s_addr = htonl(INADDR_ANY);//INADDR_ANY为不确定地址，大部分系统均为0.0.0.0，可使用任意接口
-	local->sin_port = htons(portnum);//重新设置local的值,并转换格式
+	local->sin6_family = AF_INET6;
+	local->sin6_addr.s6_addr = htonl(IN6ADDR_ANY);//INADDR_ANY为不确定地址，大部分系统均为0.0.0.0，可使用任意接口
+	local->sin6_port = htons(portnum);//重新设置local的值,并转换格式
 
 	err = bind(*sockfd, (struct sockaddr*)local, sizeof(struct sockaddr_in));//local与套接口连接
 	if(err < 0){
@@ -175,7 +175,7 @@ void creatserver(struct argument *p){
 	struct sockaddr_in from;
 	unsigned int len = sizeof(from);
 
-	creat_server_sockfd4(&serverfd,&local_addr_s,p->port);//套接字与服务器相连并处于监听状态
+	creat_server_sockfd6(&serverfd,&local_addr_s,p->port);//套接字与服务器相连并处于监听状态
 
 	while(1)
 	{
@@ -187,7 +187,7 @@ void creatserver(struct argument *p){
 		struct timeval time;
 		gettimeofday(&time, NULL);
 		printf("time:%lds, %ldus\n",time.tv_sec,time.tv_usec);
-		printf("a IPv4 client from:%s\n",inet_ntop(AF_INET, &(from.sin_addr), addrstr, INET_ADDRSTRLEN));
+		printf("a IPv4 client from:%s\n",inet_ntop(AF_INET6, &(from.sin_addr), addrstr, INET_ADDRSTRLEN));
 	}
 
 }
